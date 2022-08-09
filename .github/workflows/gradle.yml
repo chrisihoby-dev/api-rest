@@ -26,5 +26,5 @@ jobs:
         distribution: 'adopt'
         cache: gradle
     - name: Build with Gradle
-      run: chmod +x ./gradlew assemble
+      run: gradle build
 
