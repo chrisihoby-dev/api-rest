@@ -1,8 +1,15 @@
 FROM gradle:7-jdk17-jammy AS BUILD_IMAGE
-RUN mkdir /home/src
-COPY ./* /home/api-test/
+#RUN mkdir /home/src
+COPY . /home/api-test
 WORKDIR /home/api-test
-RUN gradle build --stacktrace
+
+USER root
+#5
+RUN chown -R gradle /home/api-test
+#6
+USER gradle
+
+RUN gradle clean build --no-daemon
 
 
 #Final run image
@@ -10,7 +17,7 @@ FROM openjdk:17-oracle
 RUN mkdir /home/api-test
 WORKDIR /home/api-test
 COPY --from=BUILD_IMAGE /home/api-test/build/libs/api-test-0.0.1-SNAPSHOT.jar .
-CMD ["java","-jar","/api-test-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar","/home/api-test/api-test-0.0.1-SNAPSHOT.jar"]
 
 #FROM openjdk:17-oracle
 #VOLUME /tmp
